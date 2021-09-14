@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Banco de Dados Postgres - RDS
+
+##############################
+#        Parameters          #
+##############################
+Parameters:
+  AllocatedStorage:
+    Description: Espaco de disco alocado
+    Type: String
+    Default: 20
+  StorageType: 
+    Description: Tipo de armazenamento gp2 ou io1
+    Type: String
+    Default: gp2
+  DBInstanceClass: 
+    Description: Tipo da instancia
+    Type: String
+    Default: db.t2.micro
+  Engine: 
+    Description: Tipo de SGBD
+    Type: String
+    Default: postgres
+  EngineVersion: 
+    Description: Versão do SGBD
+    Type: String
+    Default: '12.7'
+  MasterUsername: 
+    Description: Nome do usuario Master
+    Type: String
+    Default: postgres
+  MasterUserPassword: 
+    Description: Senha do usuario Master
+    Type: String
+    Default: .Sbrobous2!$
+  DBInstanceIdentifier: 
+    Description: Nome da instancia PostgreSQL
+    Type: String
+    Default: db-cloudformation
+  DBName: 
+    Description: Nome do banco de dados inicial
+    Type: String
+    Default: aula
+  MultiAZ: 
+    Description: Identificador do Multi AZ
+    Type: String
+    Default: false
+  BackupRetentionPeriod:
+    Description: Periodo de dias de retencao dos backups
+    Type: Number
+    Default: 7
+  PreferredBackupWindow: 
+    Description: Janela de backup
+    Type: String
+    Default: 03:30-06:30
+  MonitoringInterval: 
+    Description: Intervalo de monitoramento
+    Type: Number
+    Default: 0
+
+##############################
+#        Resources           #
+##############################
+Resources:
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: !Ref AllocatedStorage
+      StorageType: !Ref StorageType
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: !Ref Engine
+      EngineVersion: !Ref EngineVersion
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier
+      DBName: !Ref DBName
+      MultiAZ: !Ref MultiAZ
+      PubliclyAccessible: true
+      StorageEncrypted: false
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      PreferredBackupWindow: !Ref PreferredBackupWindow
+      MonitoringInterval: !Ref MonitoringInterval
