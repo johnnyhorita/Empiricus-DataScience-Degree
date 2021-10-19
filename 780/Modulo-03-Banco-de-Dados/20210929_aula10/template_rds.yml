@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Banco de Dados Postgres - RDS
+
+##############################
+#        Parameters          #
+##############################
+Parameters:
+  AllocatedStorage:
+    Description: espaco de disco alocado
+    Type: String
+    Default: 20
+  StorageType:
+    Description: tipo de armazenamento gp2 ou io1
+    Type: String
+    Default: gp2
+  DBInstanceClass:
+    Description: tipo da instancia
+    Type: String
+    Default: db.t2.micro
+  Engine:
+    Description: tipo de sgbd
+    Type: String
+    Default: postgres
+  EngineVersion:
+    Description: versao do sgdb
+    Type: String
+    Default: '12.7'
+  MasterUsername:
+    Description: nome do usuario admin
+    Type: String
+    Default: postgres
+  MasterUserPassword:
+    Description: senha do usuario admin
+    Type: String
+    Default: letscodeaws
+  DBInstanceIdentifier:
+    Description: nome da instancia
+    Type: String
+    Default: db-cloudformation
+  DBName:
+    Description: nome do banco de dados inicial
+    Type: String
+    Default: aula
+  MultiAZ:
+    Description: identificador de multi AZ
+    Type: String
+    Default: 'false'
+  BackupRetentionPeriod:
+    Description: periodo em dias de retencao dos backups
+    Type: Number
+    Default: 7
+  PreferredBackupWindow:
+    Description: O intervalo de tempo diário durante o qual os backups automatizados serão criados. Deve estar no formato Deve estar no formato hh24:mi-hh24:mi
+    Type: String
+    Default: "03:15-04:15"
+  MonitoringInterval:
+    Description: Intervalo de monitoramento
+    Type: Number
+    Default: 0
+
+##############################
+#        Resources           #
+##############################
+Resources:
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: !Ref AllocatedStorage
+      StorageType: !Ref StorageType
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: !Ref Engine
+      EngineVersion: !Ref EngineVersion
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier
+      DBName: !Ref DBName
+      MultiAZ: !Ref MultiAZ
+      PubliclyAccessible: true
+      StorageEncrypted: false
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      PreferredBackupWindow: !Ref PreferredBackupWindow
+      MonitoringInterval: !Ref MonitoringInterval
+      

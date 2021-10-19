@@ -27,9 +27,11 @@ from products where product_name like 'a%' or product_name like '%h%' limit 5
 
 --5) Dê a média de preços de todos os produtos das categorias entre 1 e 5. Arredonde para 1 casa decimal.
 select ROUND(CAST(sum(unit_price)/count(unit_price) AS DECIMAL), 1) as "avg_price" from products where category_id between 1 and 5
+select ROUND(CAST(avg(unit_price) AS DECIMAL), 1) as "avg_price" from products where category_id between 1 and 5
 
 --6) Liste a média de preços e a quantidade de produtos distintos por SupplierID; ordene pela média de preço, do maior para o menor, e só mostre os 5 primeiros.
 select supplier_id, count(supplier_id) as "ct_products", ROUND(CAST(sum(unit_price)/count(unit_price) AS DECIMAL), 2) as "avg_price"  from products group by supplier_id order by 3 desc
+select supplier_id, count(supplier_id) as "ct_products", ROUND(CAST(avg(unit_price) AS DECIMAL), 2) as "avg_price"  from products group by supplier_id order by 3 desc
 
 --Na tabela Orders:
 --1) Liste o top 3 de funcionários com mais vendas no primeiro trimestre de 1996.
@@ -56,7 +58,7 @@ select case
 		end as "Americas", 
 		count(supplier_id) as "ct_supplier" 
 from 	suppliers 
-where phone not like '(1%'
+where phone not like '(1%' or phone not like '1%'
 group by case 
 			when country in ('USA', 'Brazil', 'Canada') then 'Americas' 
 			else 'Outros' 
@@ -66,14 +68,14 @@ group by case
 select tb.americas, sum(tb.ct_supplier) 
 from 
 (
-select case 
-			when country in ('USA', 'Brazil', 'Canada') then 'Americas' 
-			else 'Outros' 
-		end as "americas",
-		count(supplier_id) as "ct_supplier" 
-from 	suppliers 
-where phone not like '(1%'
-group by country
+	select case 
+				when country in ('USA', 'Brazil', 'Canada') then 'Americas' 
+				else 'Outros' 
+			end as "americas",
+			count(supplier_id) as "ct_supplier" 
+	from 	suppliers 
+	where phone not like '(1%' or phone not like '1%'
+	group by country
 ) tb
 group by tb.americas
 
@@ -86,7 +88,7 @@ select case
 		end as "americas",
 		count(supplier_id) as "ct_supplier" 
 from 	suppliers 
-where phone not like '(1%'
+where phone not like '(1%' or phone not like '1%'
 group by country
 )
 select americas, sum(ct_supplier)
@@ -101,6 +103,44 @@ where phone like '(%'
 group by 1, 2
 having count(*) > 1
 order by city asc
+
+select city, substring(phone,strpos(phone, '('), strpos(phone, ')')) as "code_area", count(*) as "ct_code_area"
+from suppliers
+where phone like '(%'
+group by 1, 2
+having count(*) > 1
+order by city asc
+
+select 	city,
+		phone,
+		SUBSTRING(phone FROM '^\(?(\d+)[\)-\.]') AS city_area_code_0,
+		SUBSTRING(phone	FROM '%#"[0-9][0-9][0-9]#"%' FOR '#') AS "code_area_1",
+		SUBSTRING(phone	FROM '%#"[0-9]{3}#"%' FOR '#') AS "code_area_2",
+		SUBSTRING(phone,strpos(phone, '('), strpos(phone, ')')) AS "code_area_3", 
+		SUBSTRING(phone FROM 1 FOR 5) AS "code_area_4"
+from suppliers
+where phone like '(%'
+
+
+SELECT 
+	city,
+	phone,
+	SUBSTRING(phone FROM '^\(?(\d+)[\)-\.]') AS city_area_code
+FROM suppliers
+
+
+
+SELECT
+	SUBSTRING (
+		'The house no. is 9001',
+		'([0-9]{1,4})'
+	) as house_no
+\	
+SELECT SUBSTRING(phone	FROM '%#"\([0-9][0-9][0-9]\)#"%' FOR '#'); -- SQL
+
+
+
+
 
 --3) Tome a primeira letra de cada cidade (ex. "N" para "New Orleans"). Quais são as 5 iniciais de nomes de cidades que têm mais fornecedores associados (em ordem descrescente de fornecedores/cidade)?
 -- Este select não representa a quantidade de fornecedores por cidade
