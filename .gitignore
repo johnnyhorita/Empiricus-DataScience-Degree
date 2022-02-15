@@ -1,2 +1,4 @@
 
-*.csv
+*-checkpoint.ipynb
+.ipynb_checkpoints
+*.mp4
